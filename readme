@@ -1,0 +1,185 @@
+
+# File Hash Generator
+
+A web application that allows users to upload a file via a browser and receive the MD5 hash of its contents in response. The application consists of a **front-end interface** for user interaction and a **back-end API** for file processing.
+
+---
+
+## Project Structure
+
+```
+file-hash-app/
+│
+├── backend/
+│   ├── app.py              # Backend API (Flask)
+│   ├── requirements.txt    # Backend dependencies
+│
+├── frontend/
+│   ├── index.html          # Frontend interface
+│   ├── styles.css          # Frontend styling
+│   ├── script.js           # Frontend logic
+│
+└── README.md               # Project documentation
+```
+
+---
+
+## Features
+
+- **Front-End Interface**:
+  - Users can upload a file using a simple and intuitive web interface.
+  - Displays the filename and MD5 hash of the uploaded file.
+
+- **Back-End API**:
+  - Validates file size (maximum 10 MB) and type (allowed extensions: `.txt`, `.pdf`, `.png`, `.jpg`, `.jpeg`, `.gif`).
+  - Computes the MD5 hash of the file contents.
+  - Returns the result in JSON format.
+
+- **Security**:
+  - Sanitizes filenames to prevent directory traversal attacks.
+  - Uses CORS to securely allow front-end and back-end communication.
+
+---
+
+## Prerequisites
+
+- Python 3.x
+- Flask (`pip install flask`)
+- Flask-CORS (`pip install flask-cors`)
+- A modern web browser (e.g., Chrome, Firefox)
+
+---
+
+## Installation and Setup
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Olisaemeka111/file-hash-app.git
+cd file-hash-app
+```
+
+### 2. Set Up the Backend
+Navigate to the `backend` directory and install the required dependencies:
+```bash
+cd backend
+pip install -r requirements.txt
+```
+
+### 3. Run the Backend Server
+Start the Flask backend server:
+```bash
+python app.py
+```
+The backend will run on `http://localhost:5000`.
+
+### 4. Set Up the Frontend
+Open the `frontend/index.html` file in a web browser. You can use a local server (e.g., VS Code Live Server) or simply open the file directly in the browser.
+
+---
+
+## Running the Application
+
+1. **Start the Backend**:
+   - Ensure the backend server is running (`python app.py`).
+
+2. **Open the Frontend**:
+   - Open `frontend/index.html` in a browser.
+
+3. **Upload a File**:
+   - Select a file using the file input.
+   - Click "Upload and Generate Hash".
+
+4. **View the Result**:
+   - The filename and MD5 hash will be displayed on the page.
+
+---
+
+## Example Workflow
+
+### Using the Frontend:
+1. Open `frontend/index.html` in a browser.
+2. Select a file (e.g., `example.txt`).
+3. Click "Upload and Generate Hash".
+4. The frontend will display:
+   ```
+   File: example.txt, MD5 Hash: d41d8cd98f00b204e9800998ecf8427e
+   ```
+
+### Using `curl`:
+You can also test the backend API directly using `curl`:
+```bash
+curl -X POST -F "file=@/path/to/your/file.txt" http://localhost:5000/upload
+```
+Response:
+```json
+{
+  "filename": "file.txt",
+  "md5_hash": "d41d8cd98f00b204e9800998ecf8427e"
+}
+```
+
+---
+
+## Configuration
+
+### Backend Configuration:
+- **File Size Limit**: Modify `MAX_FILE_SIZE` in `backend/app.py` to change the maximum allowed file size (default: 10 MB).
+- **Allowed File Types**: Update the `ALLOWED_EXTENSIONS` set in `backend/app.py` to include or exclude file types.
+
+### Frontend Configuration:
+- **API Endpoint**: Update the API URL in `frontend/script.js` if the backend is hosted on a different server or port.
+
+---
+
+## Deployment
+
+### Using Gunicorn (Production):
+To deploy the backend in a production environment:
+1. Install Gunicorn:
+   ```bash
+   pip install gunicorn
+   ```
+2. Run the backend with Gunicorn:
+   ```bash
+   gunicorn -w 4 -b 0.0.0.0:5000 app:app
+   ```
+   - `-w 4`: Runs 4 worker processes for handling requests concurrently.
+   - `-b 0.0.0.0:5000`: Binds the app to all available IPs on port 5000.
+
+### Frontend Deployment:
+- Host the `frontend` directory on a web server (e.g., Nginx, Apache) or a static hosting service (e.g., GitHub Pages, Netlify).
+
+---
+
+## License
+
+README provides all the necessary documentation to set up, run, and deploy the **File Hash Generator** application.
+
+
+
+
+
+
+
+Suggestions for Production Improvements
+While the code meets all requirements, here are some ways you can further enhance the system:
+1. **HTTPS Support**:
+    - Use HTTPS (via a reverse proxy like NGINX) for secure communication between the client and server.
+
+2. **Error Logging**:
+    - Add logging mechanisms to log file upload errors, unauthorized attempts, or unusual activity for auditing.
+
+3. **Authentication**:
+    - Require API keys or token-based authentication for valid upload requests.
+
+4. **Hash Algorithm**:
+    - Consider using stronger hashing algorithms like `SHA-256` or `SHA-3` for higher security in production environments.
+
+
+
+
+Improvements for Production
+To meet production-level requirements:
+1. Save uploaded file data to a cloud storage solution (e.g., AWS S3, Google Cloud Storage) or a database instead of memory or local disk.
+2. Use HTTPS for secure communication (Flask's development server does not support HTTPS directly).
+3. Implement additional authentication or API key validation to prevent unauthorized access.

@@ -1,0 +1,24 @@
+version: "3.9"  # Specify Docker Compose version
+services:
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"  # Expose backend port 5000
+    volumes:
+      - ./backend:/app  # Mount backend code for live development
+    environment:
+      - FLASK_ENV=development  # Ensure Flask runs in dev mode
+    command: python app.py  # Command to start backend
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Expose frontend port 3000
+    volumes:
+      - ./frontend:/app  # Mount frontend files for live development
+    command: python3 -m http.server 3000  # Command to serve the frontend
