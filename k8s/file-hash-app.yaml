@@ -1,0 +1,44 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: file-hash-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: file-hash-app
+  template:
+    metadata:
+      labels:
+        app: file-hash-app
+    spec:
+      containers:
+        - name: file-hash-app
+          image: olisaemeka111/file-hash-app:latest  # Using your Docker Hub username
+          ports:
+            - containerPort: 5000   # Flask default port
+          env:
+            - name: FLASK_ENV
+              value: "production"
+            - name: DEBUG
+              value: "False"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SECRET_KEY
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: file-hash-service
+spec:
+  selector:
+    app: file-hash-app
+  ports:
+    - protocol: TCP
+      port: 80                 # External port
+      targetPort: 5000         # Match Flask app's port
+  type: LoadBalancer
