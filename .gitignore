@@ -1,0 +1,45 @@
+# Ignore everything
+*
+
+# Allow only specific files or directories
+!.gitignore
+!index.html
+!script.js
+!styles.css
+!app.py
+!requirements.txt
+!frontend/
+!backend/
+
+# Terraform-specific ignores
+*.tfstate      # Ignore Terraform state files
+*.tfstate.*    # Ignore backup files of Terraform state
+.crash         # Ignore crash logs from Terraform
+*.tfplan       # Ignore Terraform plan files
+.terraform/    # Ignore the Terraform hidden directory
+terraform.tfvars  # Ignore files containing sensitive Terraform variables
+
+# Large files (custom rule: ignore files larger than 10MB, recommended to use Git Large File Storage for binaries)
+*.zip
+*.tar.gz
+*.log
+*.out
+*.exe
+*.iso
+*.jar
+
+# Python-specific ignores
+*.pyc          # Ignore compiled Python files
+__pycache__/   # Ignore Python cache folders
+venv/          # Ignore virtual environment folder
+
+# Node.js/Frontend-specific (if you use Node.js for frontend)
+node_modules/  # Ignore Node.js package dependencies
+*.env          # Ignore environment files
+
+# IDE and OS-generated files
+.DS_Store      # macOS system files
+.idea/         # IntelliJ project settings
+.vscode/       # VS Code settings and folders
+*.sublime-project
+*.sublime-workspace
