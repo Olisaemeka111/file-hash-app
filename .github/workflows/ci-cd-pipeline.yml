@@ -12,19 +12,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
+      # Checkout code
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      # Verify app.py exists
+      - name: Verify app.py Exists
+        run: |
+          if [ ! -f "backend/app.py" ]; then
+            echo "Error: backend/app.py not found in the repository."
+            exit 1
+          fi
 
       # Python Backend Linting
       - name: Lint Python Code
         run: |
           pip install flake8 bandit
-          flake8 app.py
-          bandit -r app.py
+          flake8 backend/app.py  # Lint the Flask app file
 
-      # JavaScript Linting (Frontend)
+      # JavaScript Frontend Linting
       - name: Lint JavaScript Code
+        working-directory: frontend
         run: |
           npm install eslint --save-dev
           npx eslint script.js
@@ -43,8 +51,8 @@ jobs:
         run: |
           python3 -m venv venv
           source venv/bin/activate
-          pip install -r requirements.txt
-          pytest --maxfail=5 --disable-warnings
+          pip install -r backend/requirements.txt
+          pytest backend/tests --maxfail=5 --disable-warnings
 
   vulnerability-scanning:
     name: Vulnerability Testing
@@ -55,15 +63,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Scan Python Dependencies & Scripts
-      - name: Scan Python Packages for Vulnerabilities
+      # Scan Python Packages for Vulnerabilities
+      - name: Scan Python Dependencies
         run: |
           pip install safety bandit
-          safety check -r requirements.txt
-          bandit -r app.py
+          safety check -r backend/requirements.txt
+          bandit -r backend/app.py
 
       # Scan Frontend for Vulnerabilities
       - name: Audit NPM Dependencies
+        working-directory: frontend
         run: |
           npm install
           npm audit --audit-level=high
