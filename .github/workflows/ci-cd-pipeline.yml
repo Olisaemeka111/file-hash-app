@@ -12,25 +12,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Verify app.py exists
-      - name: Verify app.py Exists
+      - name: Verify backend/app.py Exists
         run: |
           if [ ! -f "backend/app.py" ]; then
-            echo "Error: backend/app.py not found in the repository."
+            echo "Error: backend/app.py not found."
             exit 1
           fi
 
-      # Python Backend Linting
-      - name: Lint Python Code
+      - name: Install Python Linting Tools
         run: |
           pip install flake8 bandit
-          flake8 backend/app.py  # Lint the Flask app file
 
-      # JavaScript Frontend Linting
+      - name: Lint Python Code
+        run: |
+          flake8 backend/app.py
+          bandit -r backend/app.py
+
       - name: Lint JavaScript Code
         working-directory: frontend
         run: |
@@ -42,35 +42,41 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Install Dependencies & Run Tests
-      - name: Install Python Dependencies
+      - name: Install Python Dependencies & Run Tests
         run: |
+          cd backend
           python3 -m venv venv
           source venv/bin/activate
-          pip install -r backend/requirements.txt
-          pytest backend/tests --maxfail=5 --disable-warnings
+          pip install -r requirements.txt
+          pytest tests --maxfail=5 --disable-warnings
 
   vulnerability-scanning:
     name: Vulnerability Testing
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Scan Python Packages for Vulnerabilities
-      - name: Scan Python Dependencies
+      - name: Verify backend/app.py Exists
+        run: |
+          if [ ! -f "backend/app.py" ]; then
+            echo "Warning: backend/app.py not found, skipping security scan."
+            exit 0  # Exit gracefully instead of failing the pipeline
+          fi
+
+      - name: Install Security Tools
         run: |
           pip install safety bandit
+
+      - name: Scan Python Dependencies
+        run: |
           safety check -r backend/requirements.txt
           bandit -r backend/app.py
 
-      # Scan Frontend for Vulnerabilities
       - name: Audit NPM Dependencies
         working-directory: frontend
         run: |
@@ -82,15 +88,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Run Security Scans with OWASP ZAP
+      - name: Start Flask App in Background
+        run: |
+          cd backend
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          python app.py &  # Start Flask app in background
+          sleep 10  # Give it time to start
+
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker pull owasp/zap2docker-stable
           docker run -v $(pwd):/zap/wrk:rw -t owasp/zap2docker-stable zap-baseline.py -t http://127.0.0.1:5000 -r report.html
+
       - name: Upload Security Report
         uses: actions/upload-artifact@v3
         with:
