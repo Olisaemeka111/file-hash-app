@@ -1,15 +1,6 @@
 # Ignore everything
 *
 
-# Allow only specific files or directories
-!.gitignore
-!index.html
-!script.js
-!styles.css
-!app.py
-!requirements.txt
-!frontend/
-!backend/
 
 # Terraform-specific ignores
 *.tfstate      # Ignore Terraform state files
