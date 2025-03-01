@@ -4,14 +4,11 @@ FROM python:3.9-slim
 # Set the working directory
 WORKDIR /app
 
-# Copy the backend files
+# Copy the frontend files
 COPY . /app
 
-# Install dependencies
-RUN pip install -r requirements.txt
+# Expose the frontend port
+EXPOSE 3000
 
-# Expose the backend port (Flask runs on 5000)
-EXPOSE 5000
-
-# Run the Flask app
-CMD ["python", "app.py"]
+# Run the frontend server
+CMD ["python3", "-m", "http.server", "3000"]
